@@ -12,52 +12,38 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.tcs.weather.bean.WeatherBean;
+import com.tcs.weather.exception.WeatherPredictorException;
 import com.tcs.weather.util.ApplicationConstant;
 import com.tcs.weather.util.FileOperations;
 
+
+/**
+ * 
+ * @author Jacob Sony,jacobsony.m@tcs.com
+ * 
+ * This the test class for WeatherDataProcessor
+ *
+ */
 public class WeatherDataProcessorTest {
 
 	Properties prop =null;
+	WeatherDataProcessor dataProcessor = null;
+	
 	@Before
 	public void initialize() throws IOException {
 		FileOperations operations = new FileOperations();
-		prop = operations.readReadPropertyFile();
+		prop = operations.readPropertyFile(ApplicationConstant.PROPERTY_FILE_NAME);
+		dataProcessor = new WeatherDataProcessor();
 		
 	}
 	
 	
-	@Test
-	public void testAtmospherePressureCalculations() {
-		WeatherDataProcessor wdp = new WeatherDataProcessor();
-		
-		try {
-			float actual = wdp.fetchAtmospherePressure("kochi", prop);
-			float fraction = (0/100)*12;
-			float actualPressure = ApplicationConstant.SEALEVEL_PRESSURE_KEY - fraction;
-			Assert.assertEquals(actualPressure, actual,0.00f);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Ignore
-	public void testFetchTemperatureCalculations() {
-		WeatherDataProcessor wdp = new WeatherDataProcessor();
-		try {
-			float actual = wdp.fetchTemperature("kochi", prop);
-			Assert.assertEquals(1.3f, actual,0.0f);			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-
 	
 	@Test
-	public void testFetchIata() {
-		WeatherDataProcessor wdp = new WeatherDataProcessor();
+	public void testFetchIataCode() {
 		try {
-			String actual = wdp.fetchIataCode("kochi", prop);
+			String actual = dataProcessor.fetchIataCode("kochi", prop);
 		   Assert.assertEquals("COK", actual);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -65,11 +51,107 @@ public class WeatherDataProcessorTest {
 	}
 	
 	@Test
-	public void testSnowCondition() {
-		WeatherDataProcessor wdp = new WeatherDataProcessor();
+	public void tesSetCoordinatesAltitude() {
+		WeatherBean weatherBean = new WeatherBean();
+		
 		try {
-			float temperature = 1;
-			String actual = wdp.fetchCondition(temperature,"kochi", prop);
+			 dataProcessor.setCoordinates("johannesburg", weatherBean,prop);
+			double actual = weatherBean.getAltitude();
+			double expected = 1753;
+		   Assert.assertEquals(expected, actual,0.0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void tesSetCoordinatesLongitude() {
+		WeatherBean weatherBean = new WeatherBean();
+		
+		try {
+			 dataProcessor.setCoordinates("johannesburg", weatherBean,prop);
+			double actual = weatherBean.getLongitude();
+			double expected = 28.0473;
+		   Assert.assertEquals(expected, actual,0.0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void tesSetCoordinatesLatitude() {
+		WeatherBean weatherBean = new WeatherBean();
+		
+		try {
+			 dataProcessor.setCoordinates("johannesburg", weatherBean,prop); 
+			double actual = weatherBean.getLatitude();
+			double expected = -26.2041;
+		   Assert.assertEquals(expected, actual,0.0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Test
+	public void testfetchAtmosphericPressure() {
+		
+			double expected = 802.89;
+			double actual = 0;
+			try {
+				actual = dataProcessor.fetchAtmosphericPressure("johannesburg", prop);
+			} catch (WeatherPredictorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			Assert.assertEquals(expected, actual,0.00);
+		
+	}
+	
+	
+	@Test
+	public void testfetchHumidity() {
+		
+			double expected = 34.9;
+			double temperature = 12;
+			double actual = 0;
+			try {
+				actual = dataProcessor.fetchHumidity("johannesburg", temperature ,prop);
+			} catch (WeatherPredictorException e) {
+				e.printStackTrace();
+			}
+			
+			Assert.assertEquals(expected, actual,0.0);
+		
+	}
+	
+	
+	@Test
+	public void testfetchBaseStations() {
+		
+			
+		String [] expected ={"Kochi","Tokyo","Sydney","Moscow","Paris","Johannesburg","Delhi","Dubai","NewYork","Santiago"};
+		
+		String [] actual = null;
+			try {
+				actual = dataProcessor.fetchBaseStations(prop);
+			} catch (WeatherPredictorException e) {
+				e.printStackTrace();
+			}
+			
+			Assert.assertArrayEquals(expected, actual);
+		
+	}
+	
+
+	
+	
+	@Test
+	public void testSnowCondition() {
+		try {
+			double temperature = 1;
+			String actual = dataProcessor.fetchCondition(temperature,"kochi", prop);
 		   Assert.assertEquals("Snow", actual);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -78,10 +160,9 @@ public class WeatherDataProcessorTest {
 	
 	@Test
 	public void testColdCondition() {
-		WeatherDataProcessor wdp = new WeatherDataProcessor();
 		try {
-			float temperature = 6;
-			String actual = wdp.fetchCondition(temperature,"kochi", prop);
+			double temperature = 6;
+			String actual = dataProcessor.fetchCondition(temperature,"kochi", prop);
 		   Assert.assertEquals("Cold", actual);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -90,10 +171,9 @@ public class WeatherDataProcessorTest {
 	
 	@Test
 	public void testCoolCondition() {
-		WeatherDataProcessor wdp = new WeatherDataProcessor();
 		try {
-			float temperature = 18;
-			String actual = wdp.fetchCondition(temperature,"kochi", prop);
+			double temperature = 18;
+			String actual = dataProcessor.fetchCondition(temperature,"kochi", prop);
 		   Assert.assertEquals("Cool", actual);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -102,9 +182,8 @@ public class WeatherDataProcessorTest {
 	
 	@Test
 	public void testWarmCondition() {
-		WeatherDataProcessor wdp = new WeatherDataProcessor();
 		try {
-			float temperature = 25;
+			double temperature = 25;
 			String expected ="Warm";
 			TimeZone.setDefault(TimeZone.getTimeZone(prop.getProperty(("kochi."+ApplicationConstant.TIME_ZONE_KEY))));
 			Calendar calendar = GregorianCalendar.getInstance();
@@ -113,7 +192,7 @@ public class WeatherDataProcessorTest {
 					&& calendar.get(Calendar.HOUR_OF_DAY) <= 14) {
 				expected ="Sunny";
 			}
-			String actual = wdp.fetchCondition(temperature,"kochi", prop);
+			String actual = dataProcessor.fetchCondition(temperature,"kochi", prop);
 		   Assert.assertEquals(expected, actual);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -122,9 +201,8 @@ public class WeatherDataProcessorTest {
 	
 	@Test
 	public void testHotCondition() {
-		WeatherDataProcessor wdp = new WeatherDataProcessor();
 		try {
-			float temperature = 32;
+			double temperature = 32;
 			String expected ="Hot";
 			TimeZone.setDefault(TimeZone.getTimeZone(prop.getProperty(("kochi."+ApplicationConstant.TIME_ZONE_KEY))));
 			Calendar calendar = GregorianCalendar.getInstance();
@@ -133,7 +211,7 @@ public class WeatherDataProcessorTest {
 					&& calendar.get(Calendar.HOUR_OF_DAY) <= 14) {
 				expected ="Sunny";
 			}
-			String actual = wdp.fetchCondition(temperature,"kochi", prop);
+			String actual = dataProcessor.fetchCondition(temperature,"kochi", prop);
 		   Assert.assertEquals(expected, actual);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -142,9 +220,8 @@ public class WeatherDataProcessorTest {
 	
 	@Test
 	public void testHotterCondition() {
-		WeatherDataProcessor wdp = new WeatherDataProcessor();
 		try {
-			float temperature = 39;
+			double temperature = 39;
 			String expected ="Hotter";
 			TimeZone.setDefault(TimeZone.getTimeZone(prop.getProperty(("kochi."+ApplicationConstant.TIME_ZONE_KEY))));
 			Calendar calendar = GregorianCalendar.getInstance();
@@ -153,7 +230,7 @@ public class WeatherDataProcessorTest {
 					&& calendar.get(Calendar.HOUR_OF_DAY) <= 14) {
 				expected ="Sunny";
 			}
-			String actual = wdp.fetchCondition(temperature,"kochi", prop);
+			String actual = dataProcessor.fetchCondition(temperature,"kochi", prop);
 		   Assert.assertEquals(expected, actual);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -161,19 +238,17 @@ public class WeatherDataProcessorTest {
 	}
 	
 	@Test
-	public void testFetchValueFromPropertt() {
-		WeatherDataProcessor wdp = new WeatherDataProcessor();
-		
-		String key = "kochi.longitude";
-		float actual;
+	@Ignore
+	public void testFetchTemperatureCalculations() {
 		try {
-			actual = Float.valueOf(wdp.fetchValueFromProperty(prop, key));
-			float expected =  77.1025f;
-			Assert.assertEquals(expected, actual,0.0000f);
+			double expected = 25.2;
+			double actual = dataProcessor.fetchTemperature("kochi", prop);
+			Assert.assertEquals(expected, actual,0.0);			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-	
 	}
+	
+
+	
 }

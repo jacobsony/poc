@@ -5,102 +5,254 @@ package com.tcs.weather.bean;
  * 
  * @author Jacob Sony,jacobsony.m@tcs.com
  * 
- * This class is the bean class containing parameters of weather
+ * This is the bean class  containing parameters of weather
+ * 
  *
  */
 
 public class WeatherBean {
 	
-	private String iata;
 	
-	private float latitude;
+	private String iataCode;
 	
-	private float longitude;
+	private double latitude;
 	
-	private float altitude;
+	private double longitude;
+	
+	private double altitude;
 	
 	private String localTime;
 	
 	private String condition;
 	
-	private float temperature;
+	private double temperature;
 	
-	private float pressure;
+	private double pressure;
 	
 	private double humidity;
-
-	public String getIata() {
-		return iata;
+	
+	
+	
+	/**
+	 * @return the iataCode
+	 */
+	public String getIataCode() {
+		return iataCode;
 	}
 
-	public void setIata(String iata) {
-		this.iata = iata;
+	/**
+	 * @param iataCode the iataCode to set
+	 */
+	public void setIataCode(String iataCode) {
+		this.iataCode = iataCode;
 	}
 
-	public float getLatitude() {
+
+
+	/**
+	 * @return the latitude
+	 */
+	public double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(float latitude) {
+
+
+	/**
+	 * @param latitude the latitude to set
+	 */
+	public void setLatitude(double latitude) {
 		this.latitude = latitude;
 	}
 
-	public float getLongitude() {
+
+
+
+
+	/**
+	 * @return the longitude
+	 */
+	public double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(float longitude) {
+
+
+
+
+	/**
+	 * @param longitude the longitude to set
+	 */
+	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
 
-	public float getAltitude() {
+
+
+
+
+	/**
+	 * @return the altitude
+	 */
+	public double getAltitude() {
 		return altitude;
 	}
 
-	public void setAltitude(float altitude) {
+
+
+
+
+	/**
+	 * @param altitude the altitude to set
+	 */
+	public void setAltitude(double altitude) {
 		this.altitude = altitude;
 	}
 
+
+
+
+
+	/**
+	 * @return the localTime
+	 */
 	public String getLocalTime() {
 		return localTime;
 	}
 
+
+
+
+
+	/**
+	 * @param localTime the localTime to set
+	 */
 	public void setLocalTime(String localTime) {
 		this.localTime = localTime;
 	}
 
+
+
+
+
+	/**
+	 * @return the condition
+	 */
 	public String getCondition() {
 		return condition;
 	}
 
+
+
+
+
+	/**
+	 * @param condition the condition to set
+	 */
 	public void setCondition(String condition) {
 		this.condition = condition;
 	}
 
-	public float getPressure() {
+
+
+
+
+	/**
+	 * @return the temperature
+	 */
+	public double getTemperature() {
+		return temperature;
+	}
+
+
+
+
+
+	/**
+	 * @param temperature the temperature to set
+	 */
+	public void setTemperature(double temperature) {
+		this.temperature = temperature;
+	}
+
+
+
+
+
+	/**
+	 * @return the pressure
+	 */
+	public double getPressure() {
 		return pressure;
 	}
 
-	public void setPressure(float pressure) {
+
+
+
+
+	/**
+	 * @param pressure the pressure to set
+	 */
+	public void setPressure(double pressure) {
 		this.pressure = pressure;
 	}
 
+
+
+
+
+	/**
+	 * @return the humidity
+	 */
 	public double getHumidity() {
 		return humidity;
 	}
 
+
+
+
+
+	/**
+	 * @param humidity the humidity to set
+	 */
 	public void setHumidity(double humidity) {
 		this.humidity = humidity;
 	}
 
-	public float getTemperature() {
-		return temperature;
-	}
 
-	public void setTemperature(float temperature) {
-		this.temperature = temperature;
-	}
 
+  /**
+   * 
+   * This method format the the weather information to required format.
+   * @return formated string
+   */
+
+	public String formatData() {
+		StringBuilder builder = new StringBuilder();
+	
+			builder.append(this.iataCode);
+			builder.append("|");
+			builder.append(this.latitude);
+			builder.append(",");
+			builder.append(this.longitude);
+			builder.append(",");
+			builder.append(this.altitude);
+			builder.append("|");
+			builder.append(this.localTime);
+			builder.append("|");
+			builder.append(this.condition);
+			builder.append("|");
+			builder.append(this.temperature);
+			builder.append("|");
+			builder.append(this.pressure);
+			builder.append("|");
+			builder.append(this.humidity);
+			builder.append("\n");
+		
+
+		return builder.toString();
+
+	}
 	
 
 }

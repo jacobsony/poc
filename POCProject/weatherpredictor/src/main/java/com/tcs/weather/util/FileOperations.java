@@ -9,41 +9,52 @@ import java.util.Properties;
 /**
  * 
  * @author Jacob Sony,jacobsony.m@tcs.com
- * This class handles file operation of weather predictor
+ * 
+ * This class handles file operation of application
+ * 
  * 
  *
  */
 public class FileOperations {
 	
-	public  void writeToFile(String data)  throws IOException
-    {	
-    		File file =new File("weatherpredictor.txt");
-    		
-    		if(!file.exists()){
-    			file.createNewFile();
-    		}
-    		
-    		FileWriter fileWritter = new FileWriter(file.getName(),true);
-    	        BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-    	        bufferWritter.write(data);
-    	        bufferWritter.close();
-    	    
-	        System.out.println("Data logged successfuly");
-    }
+	
+	/**
+	 * This methods writes data in to file with file name mentioned as parameter
+	 * @param data
+	 * @param fileName
+	 * @throws IOException
+	 */
+	public void writeToFile(final String data, final String fileName) throws IOException {
+		File file = new File(fileName);
+
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+
+		FileWriter fileWritter = new FileWriter(file.getName());
+		BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+		bufferWritter.write(data);
+		bufferWritter.close();
+
+		System.out.println("Data logged successfuly");
+	}
 
 	
-	public Properties readReadPropertyFile() throws IOException
-    {	
-		
+	/**
+	 * This method loads properties from file with name mentioned in parameters
+	 * @param propertyFileName
+	 * @return Properties
+	 * @throws IOException
+	 */
+	public Properties readPropertyFile(final String propertyFileName) throws IOException {
+
 		Properties prop = new Properties();
-		String propertyFile = "basestations.properties";
-		InputStream input = FileOperations.class.getClassLoader().getResourceAsStream(
-				propertyFile);
+		InputStream input = FileOperations.class.getClassLoader().getResourceAsStream(propertyFileName);
 		prop.load(input);
-		
+
 		return prop;
-    	    
-    }
+
+	}
 	
 	
 }

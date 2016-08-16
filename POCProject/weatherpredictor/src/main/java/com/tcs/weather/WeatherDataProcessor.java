@@ -1,18 +1,15 @@
 package com.tcs.weather;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
 import com.tcs.weather.bean.WeatherBean;
 import com.tcs.weather.exception.WeatherPredictorException;
 import com.tcs.weather.util.ApplicationConstant;
+import com.tcs.weather.util.ApplicationUtil;
 
 
 /**
@@ -20,180 +17,135 @@ import com.tcs.weather.util.ApplicationConstant;
  * 
  * @author Jacob Sony,jacobsony.m@tcs.com
  * 
- * This class contains the methods to process data to calculate various parameters of weather
+ * This class contains the methods which process data to calculate various parameters of weather.
+ * The data to calculate parameters stored in  basestations.properties file 
  * 
- *  */
+ * 
+ *  
+ */
 public class WeatherDataProcessor {
 	
-	private  static  Map<Integer,String> monthMap = new HashMap<Integer, String>();
-	
-	
-	//Static method will load month information to a map
-	
-	static{
-		monthMap.put(0, "january");
-		monthMap.put(1, "february");
-		monthMap.put(2, "march");
-		monthMap.put(3, "april");
-		monthMap.put(4, "may");
-		monthMap.put(5, "june");
-		monthMap.put(6, "july");
-		monthMap.put(7, "august");
-		monthMap.put(8, "september");
-		monthMap.put(9, "october");
-		monthMap.put(10,"november");
-		monthMap.put(11,"december");
-	}
-	
 	/**
-	 * 
-	 * This method calculate the temperature based on minimum and maximum temperature in a month.
-	 * Minimum and maximum temperature for each month stored in property file
-	 * Assumption : Max temperature is at 12:00 noon,And minimum temperature at midnight 00:00
-	 * And assumed uniform variation across the hours.
-	 * 
-	 * @param stationName
-	 * @param Properties
-	 * @return temperature
-	 * @throws WeatherPredictorException 
-	 * @throws NumberFormatException 
-	 */
-	public  float fetchTemperature(String stationName, Properties prop) throws NumberFormatException, WeatherPredictorException
-		
-	{
-		
-		String month = fetchMonth(stationName,prop);
-		String key = stationName+"."+month+"."+ApplicationConstant.MINIMUM_TEMP_KEY;
-		
-		float minTemperature = Float.valueOf(fetchValueFromProperty(prop,key));
-		
-		key = stationName+"."+month+"."+ApplicationConstant.MAXIMUM_TEMP_KEY;
-		
-		float maxTemperature    = Float.valueOf(fetchValueFromProperty(prop,key));
-		
-		float calculatedTemperature;
-		float perHourVariation =  ((maxTemperature - minTemperature)/12); // calculating per hour variation.Assumption: Uniform variation of temperature.
-		
-		Calendar calendar = GregorianCalendar.getInstance();
-		calendar.setTime( new Date());
-		int hourDifference =  12 - calendar.get(Calendar.HOUR_OF_DAY) ;
-		
-		// hour difference  >= 0 for hour before noon.
-		if (hourDifference >= 0) {
-			calculatedTemperature = maxTemperature - (hourDifference * perHourVariation);
-		} else {
-			calculatedTemperature = maxTemperature
-					- (hourDifference * perHourVariation * -1);
-		}
-		
-		DecimalFormat df = new DecimalFormat("#.#");  
-		calculatedTemperature = Float.valueOf(df.format(calculatedTemperature));
-		return calculatedTemperature;
-	}
-	
-	
-	
-	/**
-	 * 
-	 * 
-	 * Pressure calculated base on the information :Average pressure variance is 12hpa/100 meters from sea level
-	 * @param stationName
-	 * @param Properties
-	* @return AtmospherePressure
-	 * @throws WeatherPredictorException 
-	 * @throws NumberFormatException 
-	 */
-	
-		
-	public  float fetchAtmospherePressure(String stationName, Properties prop) throws NumberFormatException, WeatherPredictorException
-	 
-	{
-		String key = stationName+"."+ApplicationConstant.ALTITUDE_KEY;
-		float altitude = Float.valueOf(fetchValueFromProperty(prop,key));
-		float seaLevelPressure = ApplicationConstant.SEALEVEL_PRESSURE_KEY;
-		float fraction = (altitude/100)*12;
-		float calculatedPressure = seaLevelPressure - fraction;
-		return calculatedPressure; 
-	}
-	
-     /**
-      * 
-      * This method returns local time based on time stamp
-      * @param stationName
-      * @param Properties
-      * @return local time
-     * @throws WeatherPredictorException 
-      */
-	public String fetchLocalTime(String stationName, Properties prop)
-			throws WeatherPredictorException {
-
-
-		String key = stationName + "." + ApplicationConstant.TIME_ZONE_KEY;
-
-		TimeZone.setDefault(TimeZone.getTimeZone(fetchValueFromProperty(prop,
-				key)));
-
-		String formatedDate = formatDate(new Date(), "yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-
-		return formatedDate;
-
-	}
-	
-	/**
-	 *  This method returns IATA code
+	 *  This method returns IATA code for the base station.
+	 *  It fetches necessary info from basestation.properties file by passing the key.
 	 * @param stationName
 	 * @param prop
 	 * @return iata code
 	 * @throws WeatherPredictorException 
 	 */
 
-	public  String fetchIataCode(String stationName, Properties prop) throws WeatherPredictorException {
+	public  String fetchIataCode(final String stationName, final Properties prop) throws WeatherPredictorException {
 		
 		String key = stationName+"."+ApplicationConstant.IATA_KEY;
 		return fetchValueFromProperty(prop,key);
 	}
-
+	
+	
+	
 	
 	/**
-	 * This method set longitude,latitude and altitude
-	 * 
+	 * This method set longitude,latitude and altitude.
+	 *  
 	 * @param stationName
 	 * @param weather
 	 * @param Properties
 	 * @throws WeatherPredictorException 
-	 * @throws NumberFormatException 
 	 */
 	
-	public void setCordinates(String stationName, WeatherBean weather,
-			Properties prop) throws NumberFormatException,
+	public void setCoordinates(final String stationName, WeatherBean weather,
+			final Properties prop) throws 
 			WeatherPredictorException {
 
 
 		String key = stationName + "." + ApplicationConstant.LATITUDE_KEY;
 
-		weather.setLatitude(Float.valueOf(prop.getProperty(key)));
+		weather.setLatitude(Double.valueOf(prop.getProperty(key)));
 
 		key = stationName + "." + ApplicationConstant.LONGITUDE_KEY;
 
-		weather.setLongitude(Float.valueOf(fetchValueFromProperty(prop, key)));
+		weather.setLongitude(Double.valueOf(fetchValueFromProperty(prop, key)));
 
 		key = stationName + "." + ApplicationConstant.ALTITUDE_KEY;
 
-		weather.setAltitude(Float.valueOf(fetchValueFromProperty(prop, key)));
+		weather.setAltitude(Double.valueOf(fetchValueFromProperty(prop, key)));
 
 
 	}
+	
+	
+	
+	  /**
+     * 
+     * This method returns local time based on time zone
+     * @param stationName
+     * @param Properties
+     * @return local time
+    * @throws WeatherPredictorException 
+     */
+	public String fetchLocalTime(final String stationName, final Properties prop)
+			throws WeatherPredictorException {
 
+
+		Date localTime = getLocalTime(stationName, prop);
+		// date formated to required format.
+		String formatedLocalTime = ApplicationUtil.formatDate(localTime, "yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+		return formatedLocalTime;
+
+	}
+	
+	
 	/**
-	 * This method set fetch weather condition for the month
+	 * 
+	 * This method calculate the temperature based on minimum and maximum temperature in a month.
+	 * Minimum and maximum temperature for each month stored in property file
+	 * Assumption : Max temperature is at 12:00 noon,And minimum temperature at midnight 00:00
+	 * 
+	 * @param stationName
+	 * @param Properties
+	 * @return atmosphericTemperature
+	 * @throws WeatherPredictorException 
+	 */
+	public  double fetchTemperature(final String stationName, final Properties prop) throws WeatherPredictorException
+		
+	{
+		// fetching current month to get maximum and minimum temperature
+		String month = fetchMonth(stationName,prop);
+		String key = stationName+"."+month+"."+ApplicationConstant.MINIMUM_TEMP_KEY;
+		
+		// fetching minimum temperature for the current month 
+		double minTemperature = Double.valueOf(fetchValueFromProperty(prop,key));
+		
+		key = stationName+"."+month+"."+ApplicationConstant.MAXIMUM_TEMP_KEY;
+		
+		// fetching maximum temperature for the current month
+		double maxTemperature    = Double.valueOf(fetchValueFromProperty(prop,key));
+		
+		// local time is calculated to get current hour of of day
+		Date localTime = getLocalTime(stationName, prop);		
+		Calendar calendar = GregorianCalendar.getInstance();
+		calendar.setTime(localTime);
+		
+		WeatherCalculations weatherCalculations = new WeatherCalculations();
+		
+		double atmosphericTemperature	= weatherCalculations.calculateTemperature(maxTemperature, minTemperature,calendar.get(Calendar.HOUR_OF_DAY));
+		
+		return atmosphericTemperature;
+	}
+	
+	
+	
+	
+	/**
+	 * This method returns current weather condition.
+	 * The weather condition is calculated based on temperature and hour of day.
 	 * @param stationName
 	 * @param Properties
 	 *  @return condition
 	 * @throws WeatherPredictorException 
 	 */
 
-	public String fetchCondition(float temperature,String stationName, Properties prop) throws WeatherPredictorException {
+	public String fetchCondition(final double temperature,final String stationName, final Properties prop) throws WeatherPredictorException {
 
 		String weatherCondition = null;
 
@@ -235,18 +187,121 @@ public class WeatherDataProcessor {
 	}
 
 	
+	
+	/**
+	 * 
+	 * This method calculates current atmospheric pressure
+	 * Pressure calculated base on the information,
+	 * Pressure varies with altitude
+	 * ie Average pressure variance is 12hpa/100 meters from sea level
+	 * Sea level pressure is a constant value
+	 * @param stationName
+	 * @param Properties
+	 * @return atmosphericPressure
+	 * @throws WeatherPredictorException 
+	 */
+		
+	public  double fetchAtmosphericPressure(final String stationName,  final Properties prop) throws  WeatherPredictorException
+	 
+	{
+		String key = stationName+"."+ApplicationConstant.ALTITUDE_KEY;
+		double altitude = Double.valueOf(fetchValueFromProperty(prop,key));
+		WeatherCalculations weatherCalculations = new WeatherCalculations();		
+		double atmosphericPressure = weatherCalculations.calculateAtmopshericPressure(altitude);
+		return atmosphericPressure; 
+	}
+	
+
+	/**
+	 * This method calculate atmospheric humidity
+	 * The humidity is calculated on the dew point temperature and current temperature 
+	 * Average dew point temperature for each month is stored in properties file
+	 * @param stationName
+	 * @param temperature
+	 * @param Properties
+	 * @return humidity
+	 * @throws WeatherPredictorException 
+	 */
+
+	public double fetchHumidity(final String stationName, final double temperature,final Properties prop) throws  WeatherPredictorException {
+		
+		// fectching current month to get dewpoint temperture of the month 
+		String month = fetchMonth(stationName,prop);
+		
+		String key = stationName+"."+month+"."+ApplicationConstant.DEWPOINT_KEY;
+		
+		// dew point for the month is fetched from properties file
+		double dewpointTemperature = Double.valueOf(fetchValueFromProperty(prop,key));
+		WeatherCalculations weatherCalculations = new WeatherCalculations();
+		
+		double humidity = weatherCalculations.calculateHumidity(dewpointTemperature, temperature);
+		
+		return humidity;
+	}
+	
+	
+	/**
+	 * 
+	 * This method fetch base station details from property file
+	 * 
+	 * @param prop
+	 * @return arrayOfBaseStation
+	 * @throws WeatherPredictorException
+	 */
+	
+	
+	public String[] fetchBaseStations( final Properties prop)
+			throws WeatherPredictorException {
+		String baseStations = fetchValueFromProperty(prop,
+				ApplicationConstant.BASE_STATION_KEY);
+		//if none of the base stations defined it considers as exceptional scenario
+		if (baseStations.isEmpty()) {
+			throw new WeatherPredictorException("Base stations details are empty");
+		}
+		 // Base station names stored in property file separated by comma
+		String[] arrayOfBaseStation = baseStations.split(",");
+		return arrayOfBaseStation;
+
+	}
+	
+	
+	  /**
+	   * 
+	   * This method fetches value from property file for key.
+	   * If key is missing it will throw WeatherPredictorException.
+	   * 
+	   * @param Properties
+	   * @param key
+	   * @return Value
+	   * @throws WeatherPredictorException
+	   */
+	private String fetchValueFromProperty(final Properties prop, final String key)
+			throws WeatherPredictorException {
+		String value = prop.getProperty(key);
+		// if value is null a WeatherPredictorException is thrown
+		if (value == null)
+			throw new WeatherPredictorException(" missing key :"+key);
+
+		return value;
+
+	}
+	
+
+	
+	
 	/**
 	 * This method check weather its time between 10 AM to 3PM
 	 * Assumption:This time can be considered for weather condition Sunny
+	 *@param stationName
+	 * @param prop
 	 * @return boolean
 	 * @throws WeatherPredictorException 
 	 */
-	private boolean isSunny(String stationName, Properties prop) throws WeatherPredictorException {
-		String key = stationName + "." + ApplicationConstant.TIME_ZONE_KEY;
-		TimeZone.setDefault(TimeZone.getTimeZone(fetchValueFromProperty(prop,
-				key)));
+	
+	private boolean isSunny(final String stationName, final Properties prop) throws WeatherPredictorException {
+		Date localTime = getLocalTime(stationName, prop);
 		Calendar calendar = GregorianCalendar.getInstance();
-		calendar.setTime(new Date());
+		calendar.setTime(localTime);
 
 		if (calendar.get(Calendar.HOUR_OF_DAY) >= 11
 				&& calendar.get(Calendar.HOUR_OF_DAY) <= 14) {
@@ -254,84 +309,38 @@ public class WeatherDataProcessor {
 		}
 		return false;
 	}
-
-    
-	private String fetchMonth(String stationName, Properties prop)
-			throws WeatherPredictorException {
-
-		String key = stationName + "." + ApplicationConstant.TIME_ZONE_KEY;
-		TimeZone.setDefault(TimeZone.getTimeZone(fetchValueFromProperty(prop,
-				key)));
-		Calendar calendar = GregorianCalendar.getInstance(); 
-		calendar.setTime(new Date());
-		return monthMap.get(calendar.get(Calendar.MONTH));
-	}
 	
 	/**
 	 * 
-	 * The humidity is calculated based on the equation
-	 *Relative Humidity = Vapor pressure(E)/Saturated vapor pressure(Es) *100	   
-	 *  E = 6.11*10^((7.5+Td)/(237.3++Td)
-	 *  Es = 6.11*10^((7.5+T)/(237.3++T)
-	 *  T = Current temperature
-	 *  Td = Dew point temperature.Month wise dew point temperature is stored in property file
 	 * @param stationName
-	 * @param temperature
-	 * @param Properties
-	 * @return humidity
-	 * @throws WeatherPredictorException 
-	 * @throws NumberFormatException 
+	 * @param prop
+	 * @return month
+	 * @throws WeatherPredictorException
 	 */
-
-	public double fetchHumidity(String stationName, double temperature,Properties prop) throws NumberFormatException, WeatherPredictorException {
-		
-		
-		String month = fetchMonth(stationName,prop);
-		
-		String key = stationName+"."+month+"."+ApplicationConstant.DEWPOINT_KEY;
-		
-		double dewpointTemperature = Double.valueOf(fetchValueFromProperty(prop,key));
-		
-		double exponentValue = (7.5*dewpointTemperature)/(237.3+dewpointTemperature) ;
-		
-		double vaporPressure = 6.11*Math.pow(10, exponentValue);
-		
-		double exponentValue2	 = (7.5*temperature)/(237.3+temperature) ;
-		
-		double saturatedVaporPressure = 6.11*Math.pow(10, exponentValue2);
-		
-		double humidity  = (vaporPressure/saturatedVaporPressure)*100 ;
-		
-		DecimalFormat df = new DecimalFormat("#.#");  
-		humidity = Double.valueOf(df.format(humidity));
-		return humidity;
-	}
 	
-	  /**
-	   * 
-	   * This method will fetch value from property file based on key
-	   * 
-	   * @param prop
-	   * @param key
-	   * @return Value
-	   * @throws WeatherPredictorException
-	   */
-	public String fetchValueFromProperty(Properties prop, String key)
+	private String fetchMonth(final String stationName, final Properties prop)
 			throws WeatherPredictorException {
-		String value = prop.getProperty(key);
-		if (value == null)
-			throw new WeatherPredictorException(key);
 
-		return value;
-
+		Date localTime = getLocalTime(stationName, prop);
+		Calendar calendar = GregorianCalendar.getInstance(); 
+		calendar.setTime(localTime);
+		return ApplicationUtil.fetchMonth(calendar.get(Calendar.MONTH));
 	}
 	
-	private static String formatDate(Date date, String format) {
-		SimpleDateFormat sm = new SimpleDateFormat(format);
-		String strDate = sm.format(date);
-		return strDate;
+	
+	private Date getLocalTime(final String stationName, final Properties prop)
+			throws WeatherPredictorException {
 
+		String key = stationName + "." + ApplicationConstant.TIME_ZONE_KEY;
+
+		TimeZone.setDefault(TimeZone.getTimeZone(fetchValueFromProperty(prop,
+				key)));
+
+		return new Date();
 	}
+	
+	
+	
 
-
+		
 }
