@@ -1,5 +1,5 @@
-	Synopsis
-		WeatherPredictor predict weather in each hour based on the last year data.
+	## ** Synopsis ** 
+		WeatherPredictor predict current weather based on the last year data.
 	    The out put of project will be logged in to weatherpredictor.txt file with weather details of 10 different base stations across the world.
 	    The data contains following weather informations.
 		1) IATA Code	
@@ -12,11 +12,11 @@
 		8)pressure
 		9)humidity
 		
-	Prerequisites		
+	## **Prerequisites**		
 		1)Jdk 1.7
 		2)Maven 4.0
 		
-	Steps to run application
+	## **Steps to run application**
 				
 	  This is a java application. Maven used to build application.
 	  Build pom file with mvn clean install command.
@@ -24,7 +24,7 @@
 	  Run the jar with command java -jar weatherpredictor.jar
 	  	
 	
-     How WeatherPredictor works:
+       ## **How WeatherPredictor works:**
  
      We have selected 10 base stations across world which have various weather conditions.We have collected
 	 last year data of these stations and stored the values in property file.
@@ -34,7 +34,7 @@
 	   1) Month wise minimum and maximum temperature (in Degree Celsius)
 	   2) Month wise dew point.
 	   
-    Other informations stored in property files are	
+    ## Other informations stored in property files are	
     
 	   1)IATA code
 	   2)TimeZone
@@ -45,7 +45,7 @@
 	   
 	The application designed such that every hour it will execute produce report.
 	
-     Temperature (in Degree Celsius) Calculation:
+     ##  1)Temperature (in Degree Celsius) Calculation:
 	
     Current month is calculated from the local time.And based on the current month 
 	minimum and maximum temperature is fetched from property file;
@@ -61,7 +61,7 @@
 		This will give current temperature.
 		
 		
-     Weather condition Calculation:
+    ## 2) Weather condition Calculation:
   
       Weather condition is calculated based on temperature and time.
 	 
@@ -75,7 +75,7 @@
 		Temperature above 38 Time is between 10 AM to 2 PM = Sunny
 		Temperature above 38 Time is between 10 AM to 2 PM = Hotter
 		
-	 Atmospheric pressure Calculation:
+       ## 3)Atmospheric pressure Calculation:
   
       Pressure is calculated based on information that average pressure variance is 12hpa/100 meters from sea level
 	  
@@ -86,7 +86,7 @@
 	  Multiply the dividend with 12.
 	  This will give atmospheric pressure hpa.
 	  
-	 Humidity Calculation:  
+      ## 4) Humidity Calculation:  
 	
 	 Relative humidity is represented percentage.
 	   It is based on the equation below
