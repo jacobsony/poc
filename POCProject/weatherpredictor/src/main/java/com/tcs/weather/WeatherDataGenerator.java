@@ -38,11 +38,11 @@ public class WeatherDataGenerator  {
 			FileOperations operations = new FileOperations();
 			
 			/* Initialize  property  */
-			Properties	prop = operations.readPropertyFile(ApplicationConstant.PROPERTY_FILE_NAME);
+			Properties	properties = operations.readPropertyFile(ApplicationConstant.PROPERTY_FILE_NAME);
 
 			WeatherDataProcessor dataProcessor = new WeatherDataProcessor();
 				// fetching base station details stored in property file
-			String[] arrayOfBaseStation = dataProcessor.fetchBaseStations(prop);
+			String[] arrayOfBaseStation = dataProcessor.fetchBaseStations(properties);
 
 			List<WeatherBean> weatherDetails = new ArrayList<WeatherBean>();
 			
@@ -52,17 +52,17 @@ public class WeatherDataGenerator  {
 				System.out.println("Weather analysis for base station :" + arrayOfBaseStation[count] + "  starts");
 				
 				WeatherBean weather = new WeatherBean();
-				weather.setIataCode(dataProcessor.fetchIataCode(arrayOfBaseStation[count].toLowerCase(), prop));
+				weather.setIataCode(dataProcessor.fetchIataCode(arrayOfBaseStation[count].toLowerCase(), properties));
 				
-				dataProcessor.setCoordinates(arrayOfBaseStation[count].toLowerCase(), weather, prop);
-				weather.setLocalTime(dataProcessor.fetchLocalTime(arrayOfBaseStation[count].toLowerCase(), prop));
+				dataProcessor.setCoordinates(arrayOfBaseStation[count].toLowerCase(), weather, properties);
+				weather.setLocalTime(dataProcessor.fetchLocalTime(arrayOfBaseStation[count].toLowerCase(), properties));
 				
-				weather.setTemperature(dataProcessor.fetchTemperature(arrayOfBaseStation[count].toLowerCase(), prop));
+				weather.setTemperature(dataProcessor.fetchTemperature(arrayOfBaseStation[count].toLowerCase(), properties));
 				weather.setCondition(dataProcessor.fetchCondition(weather.getTemperature(),
-						arrayOfBaseStation[count].toLowerCase(), prop));
-				weather.setPressure(dataProcessor.fetchAtmosphericPressure(arrayOfBaseStation[count].toLowerCase(), prop));
+						arrayOfBaseStation[count].toLowerCase(), properties));
+				weather.setPressure(dataProcessor.fetchAtmosphericPressure(arrayOfBaseStation[count].toLowerCase(), properties));
 				weather.setHumidity(dataProcessor.fetchHumidity(arrayOfBaseStation[count].toLowerCase(),
-						weather.getTemperature(), prop));
+						weather.getTemperature(), properties));
 
 				weatherDetails.add(weather);
 				System.out.println("Weather analysis for basestation :" + arrayOfBaseStation[count] + " over");

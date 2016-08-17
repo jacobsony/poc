@@ -6,7 +6,9 @@ package com.tcs.weather;
  * 
  * @author Jacob Sony,jacobsony.m@tcs.com
  * 
- * This class will trigger WeatherDataGenerator 
+ * 
+ * This class contains the main method.
+ * Its the starting point of application 
  *
  */
 

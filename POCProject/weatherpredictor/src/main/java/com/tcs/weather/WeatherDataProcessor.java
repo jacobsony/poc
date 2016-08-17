@@ -250,9 +250,9 @@ public class WeatherDataProcessor {
 	 */
 	
 	
-	public String[] fetchBaseStations( final Properties prop)
+	public String[] fetchBaseStations( final Properties properties)
 			throws WeatherPredictorException {
-		String baseStations = fetchValueFromProperty(prop,
+		String baseStations = fetchValueFromProperty(properties,
 				ApplicationConstant.BASE_STATION_KEY);
 		//if none of the base stations defined it considers as exceptional scenario
 		if (baseStations.isEmpty()) {
@@ -275,9 +275,9 @@ public class WeatherDataProcessor {
 	   * @return Value
 	   * @throws WeatherPredictorException
 	   */
-	private String fetchValueFromProperty(final Properties prop, final String key)
+	private String fetchValueFromProperty(final Properties properties, final String key)
 			throws WeatherPredictorException {
-		String value = prop.getProperty(key);
+		String value = properties.getProperty(key);
 		// if value is null a WeatherPredictorException is thrown
 		if (value == null)
 			throw new WeatherPredictorException(" missing key :"+key);
@@ -293,13 +293,13 @@ public class WeatherDataProcessor {
 	 * This method check weather its time between 10 AM to 3PM
 	 * Assumption:This time can be considered for weather condition Sunny
 	 *@param stationName
-	 * @param prop
+	 * @param properties
 	 * @return boolean
 	 * @throws WeatherPredictorException 
 	 */
 	
-	private boolean isSunny(final String stationName, final Properties prop) throws WeatherPredictorException {
-		Date localTime = getLocalTime(stationName, prop);
+	private boolean isSunny(final String stationName, final Properties properties) throws WeatherPredictorException {
+		Date localTime = getLocalTime(stationName, properties);
 		Calendar calendar = GregorianCalendar.getInstance();
 		calendar.setTime(localTime);
 
