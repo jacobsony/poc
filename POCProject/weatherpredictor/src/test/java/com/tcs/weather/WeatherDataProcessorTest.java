@@ -94,14 +94,13 @@ public class WeatherDataProcessorTest {
 	
 	
 	@Test
-	public void testfetchAtmosphericPressure() {
+	public void testFetchAtmosphericPressure() {
 		
 			double expected = 802.89;
 			double actual = 0;
 			try {
 				actual = dataProcessor.fetchAtmosphericPressure("johannesburg", prop);
 			} catch (WeatherPredictorException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -111,7 +110,7 @@ public class WeatherDataProcessorTest {
 	
 	
 	@Test
-	public void testfetchHumidity() {
+	public void testFetchHumidity() {
 		
 			double expected = 34.9;
 			double temperature = 12;
@@ -128,7 +127,7 @@ public class WeatherDataProcessorTest {
 	
 	
 	@Test
-	public void testfetchBaseStations() {
+	public void testFetchBaseStations() {
 		
 			
 		String [] expected ={"Kochi","Tokyo","Sydney","Moscow","Paris","Johannesburg","Delhi","Dubai","NewYork","Santiago"};

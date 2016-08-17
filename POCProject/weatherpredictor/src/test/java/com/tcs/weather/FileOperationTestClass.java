@@ -30,7 +30,6 @@ public class FileOperationTestClass {
 			Properties prop = operations.readPropertyFile(ApplicationConstant.PROPERTY_FILE_NAME);
 			Assert.assertNotNull(prop);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

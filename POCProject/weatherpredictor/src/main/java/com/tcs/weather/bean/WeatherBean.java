@@ -5,8 +5,7 @@ package com.tcs.weather.bean;
  * 
  * @author Jacob Sony,jacobsony.m@tcs.com
  * 
- * This is the bean class  containing parameters of weather
- * 
+ * This is the bean class used to hold the values of weather parameters
  *
  */
 
