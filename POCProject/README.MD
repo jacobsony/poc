@@ -43,7 +43,6 @@
 	   5)Altitude
 	   6)List of base stations.
 	   
-	The application designed such that every hour it will execute produce report.
 	
        1)Temperature (in Degree Celsius) Calculation:
 	
